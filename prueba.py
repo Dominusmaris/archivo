@@ -3,40 +3,32 @@ import mediapipe as mp
 import time
 import math
 
-
 class handDetector():
+    def __init__(self, mode=False, maxHands=2, detectionCon=0.5, trackCon=0.5):
+        self.mode = mode
+        self.maxHands = maxHands
+        self.detectionCon = detectionCon
+        self.trackCon = trackCon
+        self.mpHands = mp.solutions.hands
+        self.hands = self.mpHands.Hands(
+        self.mode, self.maxHands, self.detectionCon, self.trackCon)
+        self.mpDraw = mp.solutions.drawing_utils
+        self.tipIds = [4, 8, 12, 16, 20]
 
 
-def __init__(self, mode=False, maxHands=2, detectionCon=0.5, trackCon=0.5):
-    self.mode = mode
-    self.maxHands = maxHands
-    self.detectionCon = detectionCon
-    self.trackCon = trackCon
+def findHands(self, img, draw=True):
+    imgRGB = cv2.cvtcolor(img, cv2.COLOR_BGR2RGB)
+    self.results = self.hands.process(imgRGB)
+
+    if self.results.multi_hand_landmarks:
+        for handLms in self.results.multi_hand_landmarks:
+            if draw:
+                self.mpDraw.draw_landmarks(
+                    img, handLms, self.mpHands.HAND_CONNECTIONS)
+    return img
 
 
-self.mpHands = mp.solutions.hands
-self.hands = self.mpHands.Hands(
-    self.mode, self.maxHands, self.detectionCon, self.trackCon)
-self.mpDraw = mp.solutions.drawing_utils
-self.tipIds = [4, 8, 12, 16, 20]
-
-
-def findHands(self, img, draw=true):
-
-
-imgRGB = cv2.cvtcolor(img, cv2.COLOR_BGR2RGB)
-self.results = self.hands.process(imgRGb)
-
-
-if self.results.multi_hand_landmarks:
-    for handLms in self.results.multi_hand_landmarks:
-        if draw:
-            self.mpDraw.draw_landmarks(
-                img, handLms, self.mpHands.HAND_CONNECTIONS)
-return img
-
-
-def findPosition(self, img, handLms, draw=true):
+def findPosition(self, img, handNo, draw=True):
     xList = []
     yList = []
     bbox = []
@@ -68,7 +60,7 @@ def fingersUp(self):
     fingers = []
 
     if self.lmList[self.tipIds[0]][1] > self.lmList[self.tipIds[0] - 1][1]:
-        finger.appened(1)
+        fingers.appened(1)
     else:
         fingers.append(0)
 
@@ -82,15 +74,15 @@ def fingersUp(self):
 
 def findDistance(self, p1, p2, img, draw=True):
 
-    x1, y1 = self.lmList[p1][1], self.lmList[pq][2]
+    x1, y1 = self.lmList[p1][1], self.lmList[p1][2]
     x2, y2 = self.lmList[p2][1], self.lmList[p2][2]
     cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
 
     if draw:
-    cv2.circle(img, (x1, y1), 15, (255, 0, 255), cv2.FILLED)
-    cv2.circle(img, (x2, y2), 15, (255, 0, 255), cv2.FILLED)
-    cv2.line(img, (x1, y1), (x2, y2), (255, 0, 255), 3)
-    cv2.circle(img, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
+        cv2.circle(img, (x1, y1), 15, (255, 0, 255), cv2.FILLED)
+        cv2.circle(img, (x2, y2), 15, (255, 0, 255), cv2.FILLED)
+        cv2.line(img, (x1, y1), (x2, y2), (255, 0, 255), 3)
+        cv2.circle(img, (cx, cy), 15, (255, 0, 255), cv2.FILLED)
 
     length = math.hypot(x2 - x1, y2 - y1)
     return length, img, [x1, y1, x2, y2, cx, cy]
